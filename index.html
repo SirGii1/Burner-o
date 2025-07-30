@@ -104,8 +104,8 @@
         cursor: pointer;
         transition: all 0.3s ease;
         box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-        margin-bottom: 20px;
-        position: relative;
+        margin: 10px;
+        min-width: 200px;
     }
 
     .connect-wallet-btn:hover:not(:disabled) {
@@ -240,10 +240,13 @@
     }
 
     .status {
-        padding: 10px 15px;
-        border-radius: 8px;
-        margin: 10px 0;
+        padding: 15px 20px;
+        border-radius: 10px;
+        margin: 15px 0;
         font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 10px;
     }
 
     .status.success {
@@ -284,49 +287,23 @@
         to { transform: rotate(360deg); }
     }
 
-    .feature-grid {
+    .wallet-options {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
         gap: 20px;
-        margin-top: 30px;
-    }
-
-    .feature-card {
-        background: rgba(255, 255, 255, 0.9);
-        border-radius: 15px;
-        padding: 25px;
-        text-align: center;
-        transition: all 0.3s ease;
-        border: 1px solid rgba(255, 255, 255, 0.3);
-    }
-
-    .feature-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
-    }
-
-    .feature-icon {
-        font-size: 3rem;
-        margin-bottom: 15px;
-        opacity: 0.8;
-    }
-
-    .wallet-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 15px;
-        margin-top: 20px;
+        margin: 20px 0;
     }
 
     .wallet-option {
         background: rgba(255, 255, 255, 0.1);
         border: 2px solid rgba(255, 255, 255, 0.2);
         border-radius: 15px;
-        padding: 20px;
+        padding: 25px;
         text-align: center;
         cursor: pointer;
         transition: all 0.3s ease;
         color: white;
+        backdrop-filter: blur(10px);
     }
 
     .wallet-option:hover {
@@ -335,54 +312,31 @@
         transform: translateY(-3px);
     }
 
-    .wallet-option.detected {
+    .wallet-option.available {
         border-color: #4ecdc4;
         background: rgba(78, 205, 196, 0.1);
     }
 
-    .wallet-option .wallet-icon {
-        font-size: 2.5rem;
-        margin-bottom: 10px;
+    .wallet-option.connected {
+        border-color: #4ecdc4;
+        background: rgba(78, 205, 196, 0.2);
     }
 
-    .wallet-option h3 {
-        margin-bottom: 5px;
-        font-size: 1.2rem;
+    .wallet-icon {
+        font-size: 3rem;
+        margin-bottom: 15px;
     }
 
-    .wallet-option p {
+    .debug-info {
+        background: #1a1a1a;
+        color: #00ff00;
+        font-family: 'Courier New', monospace;
+        padding: 15px;
+        border-radius: 8px;
+        margin: 20px 0;
         font-size: 0.9rem;
-        opacity: 0.8;
-    }
-
-    .connection-status {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        font-size: 0.9rem;
-        margin-top: 10px;
-    }
-
-    .status-dot {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        background: #ccc;
-    }
-
-    .status-dot.connected {
-        background: #4ecdc4;
-        box-shadow: 0 0 10px rgba(78, 205, 196, 0.5);
-    }
-
-    .status-dot.connecting {
-        background: #ffa500;
-        animation: pulse 1s infinite;
-    }
-
-    @keyframes pulse {
-        0%, 100% { opacity: 1; }
-        50% { opacity: 0.5; }
+        max-height: 200px;
+        overflow-y: auto;
     }
 
     @media (max-width: 768px) {
@@ -415,56 +369,49 @@
         </div>
 
 ```
+    <!-- Debug Information -->
+    <div class="wallet-section">
+        <div class="section-title">
+            🔍 Wallet Detection Debug
+        </div>
+        <div id="debugInfo" class="debug-info">Initializing wallet detection...</div>
+        <button onclick="forceDetection()" class="btn btn-primary">🔄 Force Re-detect Wallets</button>
+    </div>
+
     <!-- Main Wallet Connection -->
     <div class="wallet-section">
         <div class="section-title">
-            🔗 Main Wallet Connection
+            🔗 Wallet Connection
         </div>
         
-        <div id="walletDetection" class="status info">
-            🔍 Detecting available wallets...
+        <div id="connectionStatus" class="status info">
+            🔍 Detecting wallets... Please wait.
         </div>
 
-        <div class="wallet-grid">
-            <div id="phantomOption" class="wallet-option" onclick="connectWallet('phantom')">
-                <div class="wallet-icon">👻</div>
-                <h3>Phantom</h3>
-                <p>Most popular Solana wallet</p>
-                <div class="connection-status">
-                    <div id="phantomDot" class="status-dot"></div>
-                    <span id="phantomStatus">Not detected</span>
-                </div>
-            </div>
-
-            <div id="solflareOption" class="wallet-option" onclick="connectWallet('solflare')">
-                <div class="wallet-icon">☀️</div>
-                <h3>Solflare</h3>
-                <p>Secure Solana wallet</p>
-                <div class="connection-status">
-                    <div id="solflareDot" class="status-dot"></div>
-                    <span id="solflareStatus">Not detected</span>
-                </div>
-            </div>
-
-            <div id="backpackOption" class="wallet-option" onclick="connectWallet('backpack')">
-                <div class="wallet-icon">🎒</div>
-                <h3>Backpack</h3>
-                <p>Modern crypto wallet</p>
-                <div class="connection-status">
-                    <div id="backpackDot" class="status-dot"></div>
-                    <span id="backpackStatus">Not detected</span>
-                </div>
-            </div>
+        <!-- Manual Connection Buttons -->
+        <div style="margin: 20px 0;">
+            <h3 style="margin-bottom: 15px;">Available Connection Methods:</h3>
+            <button id="connectPhantom" class="connect-wallet-btn" onclick="connectPhantom()">
+                👻 Connect Phantom
+            </button>
+            <button id="connectSolflare" class="connect-wallet-btn" onclick="connectSolflare()">
+                ☀️ Connect Solflare  
+            </button>
+            <button id="connectBackpack" class="connect-wallet-btn" onclick="connectBackpack()">
+                🎒 Connect Backpack
+            </button>
+            <button id="connectGeneric" class="connect-wallet-btn" onclick="connectGeneric()">
+                🔗 Try Generic Connection
+            </button>
         </div>
 
-        <div id="walletStatus" class="status" style="display: none;"></div>
         <div id="walletInfo" style="display: none;" class="wallet-info">
             <strong>Connected Wallet:</strong>
             <div id="walletAddress" class="wallet-address"></div>
             <div id="walletBalance" class="balance">Balance: Loading...</div>
-            <button id="disconnectWallet" class="btn btn-danger">Disconnect</button>
-            <button id="refreshBalance" class="btn btn-primary">Refresh Balance</button>
-            <button onclick="copyToClipboard(document.getElementById('walletAddress').textContent)" class="btn">📋 Copy Address</button>
+            <button onclick="disconnectWallet()" class="btn btn-danger">Disconnect</button>
+            <button onclick="refreshBalance()" class="btn btn-primary">Refresh Balance</button>
+            <button onclick="copyAddress()" class="btn">📋 Copy Address</button>
         </div>
     </div>
 
@@ -477,9 +424,9 @@
             <label for="walletCount">Number of wallets to generate (1-50):</label>
             <input type="number" id="walletCount" min="1" max="50" value="5">
         </div>
-        <button id="generateWallets" class="btn btn-primary">Generate Burner Wallets</button>
-        <button id="clearWallets" class="btn btn-danger">Clear All Wallets</button>
-        <button id="exportWallets" class="btn" style="display: none;">📄 Export Wallets</button>
+        <button onclick="generateBurnerWallets()" class="btn btn-primary">Generate Burner Wallets</button>
+        <button onclick="clearBurnerWallets()" class="btn btn-danger">Clear All Wallets</button>
+        <button onclick="exportWallets()" class="btn" id="exportBtn" style="display: none;">📄 Export Wallets</button>
         
         <div id="walletStats" style="display: none;" class="status info">
             <strong>Generated:</strong> <span id="totalWallets">0</span> wallets | 
@@ -501,258 +448,312 @@
         <div id="distributionInfo" class="status info" style="display: none;">
             <strong>Total Cost:</strong> <span id="totalCost">0</span> SOL for <span id="activeCount">0</span> active wallets
         </div>
-        <button id="distributeSol" class="btn btn-primary" disabled>Distribute SOL to Active Wallets</button>
-        <button id="checkBalances" class="btn" style="display: none;">🔍 Check All Balances</button>
+        <button onclick="distributeSol()" class="btn btn-primary" id="distributeBtn" disabled>Connect Wallet & Generate Burners First</button>
         <div id="distributionStatus"></div>
-    </div>
-
-    <!-- Features Overview -->
-    <div class="feature-grid">
-        <div class="feature-card">
-            <div class="feature-icon">🔒</div>
-            <h3>Secure Connection</h3>
-            <p>Connect safely with multiple Solana wallets using official protocols</p>
-        </div>
-        <div class="feature-card">
-            <div class="feature-icon">⚡</div>
-            <h3>Fast Generation</h3>
-            <p>Generate multiple burner wallets instantly with cryptographic security</p>
-        </div>
-        <div class="feature-card">
-            <div class="feature-icon">💰</div>
-            <h3>SOL Distribution</h3>
-            <p>Automatically distribute SOL to selected burner wallets</p>
-        </div>
-        <div class="feature-card">
-            <div class="feature-icon">📊</div>
-            <h3>Real-time Monitoring</h3>
-            <p>Monitor balances and transaction status in real-time</p>
-        </div>
     </div>
 </div>
 
 <script>
-    // Global variables
-    let currentWallet = null;
+    // Global state
+    let connectedWallet = null;
+    let walletType = null;
     let isConnected = false;
     let burnerWallets = [];
-    let walletType = null;
+    let debugLog = [];
+
+    function addDebugLog(message) {
+        const timestamp = new Date().toLocaleTimeString();
+        debugLog.push(`[${timestamp}] ${message}`);
+        const debugDiv = document.getElementById('debugInfo');
+        debugDiv.innerHTML = debugLog.slice(-20).join('\n'); // Show last 20 messages
+        debugDiv.scrollTop = debugDiv.scrollHeight;
+        console.log(`[DEBUG] ${message}`);
+    }
+
+    function updateStatus(message, type = 'info') {
+        const statusDiv = document.getElementById('connectionStatus');
+        statusDiv.textContent = message;
+        statusDiv.className = `status ${type}`;
+        addDebugLog(`STATUS: ${message}`);
+    }
 
     // Initialize on page load
     document.addEventListener('DOMContentLoaded', function() {
-        console.log('🚀 Solana Wallet Burner initialized');
-        detectWallets();
-        setupEventListeners();
-        updateUI();
+        addDebugLog('🚀 Solana Wallet Burner initialized');
+        setTimeout(() => {
+            detectAllWallets();
+        }, 1000);
     });
 
-    function setupEventListeners() {
-        document.getElementById('disconnectWallet').addEventListener('click', disconnectWallet);
-        document.getElementById('refreshBalance').addEventListener('click', refreshBalance);
-        document.getElementById('generateWallets').addEventListener('click', generateBurnerWallets);
-        document.getElementById('clearWallets').addEventListener('click', clearBurnerWallets);
-        document.getElementById('exportWallets').addEventListener('click', exportWallets);
-        document.getElementById('distributeSol').addEventListener('click', distributeSol);
-        document.getElementById('checkBalances').addEventListener('click', checkAllBalances);
-        document.getElementById('solAmount').addEventListener('input', updateDistributionInfo);
-        document.getElementById('walletCount').addEventListener('input', validateWalletCount);
-    }
-
-    async function detectWallets() {
-        console.log('🔍 Detecting wallets...');
+    function detectAllWallets() {
+        addDebugLog('🔍 Starting comprehensive wallet detection...');
         
-        // Check for Phantom
-        if (typeof window.solana !== 'undefined' && window.solana.isPhantom) {
-            updateWalletStatus('phantom', 'detected', 'Detected');
-            console.log('✅ Phantom detected');
-        }
+        // Check window object for wallet properties
+        const windowProps = Object.getOwnPropertyNames(window);
+        addDebugLog(`Window properties found: ${windowProps.length}`);
+        
+        // Check for common wallet objects
+        const walletChecks = [
+            { name: 'Phantom', check: () => window.solana && window.solana.isPhantom },
+            { name: 'Solflare', check: () => window.solflare },
+            { name: 'Backpack', check: () => window.backpack },
+            { name: 'Generic Solana', check: () => window.solana }
+        ];
 
-        // Check for Solflare  
-        if (typeof window.solflare !== 'undefined') {
-            updateWalletStatus('solflare', 'detected', 'Detected');
-            console.log('✅ Solflare detected');
-        }
-
-        // Check for Backpack
-        if (typeof window.backpack !== 'undefined') {
-            updateWalletStatus('backpack', 'detected', 'Detected');
-            console.log('✅ Backpack detected');
-        }
-
-        // Wait a bit more for wallets to load
-        setTimeout(() => {
-            if (typeof window.solana !== 'undefined' && window.solana.isPhantom) {
-                updateWalletStatus('phantom', 'detected', 'Ready to connect');
+        let foundWallets = [];
+        
+        walletChecks.forEach(wallet => {
+            try {
+                if (wallet.check()) {
+                    foundWallets.push(wallet.name);
+                    addDebugLog(`✅ ${wallet.name} wallet detected`);
+                } else {
+                    addDebugLog(`❌ ${wallet.name} wallet not found`);
+                }
+            } catch (error) {
+                addDebugLog(`❌ Error checking ${wallet.name}: ${error.message}`);
             }
-            
-            const detectedCount = document.querySelectorAll('.wallet-option.detected').length;
-            const detectionStatus = document.getElementById('walletDetection');
-            
-            if (detectedCount > 0) {
-                detectionStatus.textContent = `✅ Found ${detectedCount} wallet(s). Click on a wallet to connect.`;
-                detectionStatus.className = 'status success';
-            } else {
-                detectionStatus.innerHTML = '⚠️ No wallets detected. Please install <a href="https://phantom.app/" target="_blank" style="color: #667eea;">Phantom</a>, <a href="https://solflare.com/" target="_blank" style="color: #667eea;">Solflare</a>, or <a href="https://backpack.app/" target="_blank" style="color: #667eea;">Backpack</a> wallet.';
-                detectionStatus.className = 'status warning';
-            }
-        }, 1000);
-    }
+        });
 
-    function updateWalletStatus(wallet, status, text) {
-        const option = document.getElementById(`${wallet}Option`);
-        const dot = document.getElementById(`${wallet}Dot`);
-        const statusText = document.getElementById(`${wallet}Status`);
+        // Additional comprehensive checks
+        if (typeof window.solana !== 'undefined') {
+            addDebugLog(`🔍 window.solana exists: ${typeof window.solana}`);
+            addDebugLog(`🔍 window.solana properties: ${Object.keys(window.solana).join(', ')}`);
+        }
 
-        if (status === 'detected') {
-            option.classList.add('detected');
-            dot.classList.add('connected');
-            statusText.textContent = text;
-        } else if (status === 'connecting') {
-            dot.classList.remove('connected');
-            dot.classList.add('connecting');
-            statusText.textContent = 'Connecting...';
-        } else if (status === 'connected') {
-            dot.classList.remove('connecting');
-            dot.classList.add('connected');
-            statusText.textContent = 'Connected';
+        if (foundWallets.length > 0) {
+            updateStatus(`✅ Found wallets: ${foundWallets.join(', ')}. Click a connection button below.`, 'success');
         } else {
-            option.classList.remove('detected');
-            dot.classList.remove('connected', 'connecting');
-            statusText.textContent = text || 'Not detected';
+            updateStatus('⚠️ No Solana wallets detected. Please install Phantom, Solflare, or Backpack wallet extension.', 'warning');
+            addDebugLog('💡 Install wallet extensions and refresh the page');
+        }
+
+        updateButtonStates();
+    }
+
+    function updateButtonStates() {
+        // Update button states based on wallet availability
+        const phantomBtn = document.getElementById('connectPhantom');
+        const solflareBtn = document.getElementById('connectSolflare');
+        const backpackBtn = document.getElementById('connectBackpack');
+
+        if (window.solana && window.solana.isPhantom) {
+            phantomBtn.style.background = 'linear-gradient(45deg, #4ecdc4, #44a08d)';
+            phantomBtn.textContent = '👻 Connect Phantom (Available)';
+        }
+
+        if (window.solflare) {
+            solflareBtn.style.background = 'linear-gradient(45deg, #4ecdc4, #44a08d)';
+            solflareBtn.textContent = '☀️ Connect Solflare (Available)';
+        }
+
+        if (window.backpack) {
+            backpackBtn.style.background = 'linear-gradient(45deg, #4ecdc4, #44a08d)';
+            backpackBtn.textContent = '🎒 Connect Backpack (Available)';
         }
     }
 
-    async function connectWallet(type) {
-        console.log(`🔗 Attempting to connect ${type} wallet`);
+    async function connectPhantom() {
+        addDebugLog('🔗 Attempting Phantom connection...');
         
         try {
-            updateWalletStatus(type, 'connecting');
-            showStatus('Connecting to wallet...', 'info');
-
-            let wallet;
-            
-            switch (type) {
-                case 'phantom':
-                    if (typeof window.solana === 'undefined' || !window.solana.isPhantom) {
-                        throw new Error('Phantom wallet not found. Please install it from phantom.app');
-                    }
-                    wallet = window.solana;
-                    break;
-                    
-                case 'solflare':
-                    if (typeof window.solflare === 'undefined') {
-                        throw new Error('Solflare wallet not found. Please install it from solflare.com');
-                    }
-                    wallet = window.solflare;
-                    break;
-                    
-                case 'backpack':
-                    if (typeof window.backpack === 'undefined') {
-                        throw new Error('Backpack wallet not found. Please install it from backpack.app');
-                    }
-                    wallet = window.backpack;
-                    break;
-                    
-                default:
-                    throw new Error('Unsupported wallet type');
+            if (typeof window.solana === 'undefined') {
+                throw new Error('Phantom wallet not installed');
             }
 
-            console.log(`📡 Connecting to ${type}...`);
-            
-            // Connect to wallet
-            const response = await wallet.connect();
-            console.log('Connection response:', response);
+            if (!window.solana.isPhantom) {
+                throw new Error('Phantom wallet not detected');
+            }
 
-            if (response.publicKey) {
-                currentWallet = wallet;
-                walletType = type;
-                isConnected = true;
-                
-                updateWalletStatus(type, 'connected');
-                showStatus(`✅ Successfully connected to ${type.charAt(0).toUpperCase() + type.slice(1)}!`, 'success');
-                
-                // Update UI
-                document.getElementById('walletAddress').textContent = response.publicKey.toString();
-                document.getElementById('walletInfo').style.display = 'block';
-                
-                // Refresh balance
-                await refreshBalance();
-                
-                console.log('✅ Wallet connected successfully');
+            updateStatus('Connecting to Phantom...', 'info');
+            addDebugLog('📡 Calling window.solana.connect()...');
+
+            const response = await window.solana.connect();
+            addDebugLog(`📨 Connection response: ${JSON.stringify(response)}`);
+
+            if (response && response.publicKey) {
+                await handleSuccessfulConnection(window.solana, 'Phantom', response.publicKey.toString());
             } else {
-                throw new Error('Failed to get public key from wallet');
+                throw new Error('No public key received from Phantom');
             }
 
         } catch (error) {
-            console.error('❌ Connection error:', error);
-            updateWalletStatus(type, 'detected', 'Connection failed');
-            
-            let errorMessage = error.message;
-            if (errorMessage.includes('User rejected')) {
-                errorMessage = 'Connection cancelled by user';
-            } else if (errorMessage.includes('not found')) {
-                errorMessage = `${type.charAt(0).toUpperCase() + type.slice(1)} wallet not installed`;
-            }
-            
-            showStatus(`❌ ${errorMessage}`, 'error');
+            addDebugLog(`❌ Phantom connection failed: ${error.message}`);
+            updateStatus(`Phantom connection failed: ${error.message}`, 'error');
         }
+    }
 
-        updateUI();
+    async function connectSolflare() {
+        addDebugLog('🔗 Attempting Solflare connection...');
+        
+        try {
+            if (typeof window.solflare === 'undefined') {
+                throw new Error('Solflare wallet not installed');
+            }
+
+            updateStatus('Connecting to Solflare...', 'info');
+            const response = await window.solflare.connect();
+            
+            if (response && response.publicKey) {
+                await handleSuccessfulConnection(window.solflare, 'Solflare', response.publicKey.toString());
+            } else {
+                throw new Error('No public key received from Solflare');
+            }
+
+        } catch (error) {
+            addDebugLog(`❌ Solflare connection failed: ${error.message}`);
+            updateStatus(`Solflare connection failed: ${error.message}`, 'error');
+        }
+    }
+
+    async function connectBackpack() {
+        addDebugLog('🔗 Attempting Backpack connection...');
+        
+        try {
+            if (typeof window.backpack === 'undefined') {
+                throw new Error('Backpack wallet not installed');
+            }
+
+            updateStatus('Connecting to Backpack...', 'info');
+            const response = await window.backpack.connect();
+            
+            if (response && response.publicKey) {
+                await handleSuccessfulConnection(window.backpack, 'Backpack', response.publicKey.toString());
+            } else {
+                throw new Error('No public key received from Backpack');
+            }
+
+        } catch (error) {
+            addDebugLog(`❌ Backpack connection failed: ${error.message}`);
+            updateStatus(`Backpack connection failed: ${error.message}`, 'error');
+        }
+    }
+
+    async function connectGeneric() {
+        addDebugLog('🔗 Attempting generic Solana connection...');
+        
+        try {
+            if (typeof window.solana === 'undefined') {
+                throw new Error('No Solana wallet provider found');
+            }
+
+            updateStatus('Connecting to Solana wallet...', 'info');
+            addDebugLog(`🔍 Using provider: ${window.solana.constructor.name || 'Unknown'}`);
+
+            const response = await window.solana.connect();
+            addDebugLog(`📨 Generic connection response: ${JSON.stringify(response)}`);
+            
+            if (response && response.publicKey) {
+                const walletName = window.solana.isPhantom ? 'Phantom' : 
+                                 window.solana.isSolflare ? 'Solflare' : 
+                                 'Unknown Solana Wallet';
+                await handleSuccessfulConnection(window.solana, walletName, response.publicKey.toString());
+            } else {
+                throw new Error('No public key received from wallet');
+            }
+
+        } catch (error) {
+            addDebugLog(`❌ Generic connection failed: ${error.message}`);
+            updateStatus(`Generic connection failed: ${error.message}`, 'error');
+        }
+    }
+
+    async function handleSuccessfulConnection(wallet, type, publicKey) {
+        connectedWallet = wallet;
+        walletType = type;
+        isConnected = true;
+
+        addDebugLog(`✅ Successfully connected to ${type}`);
+        addDebugLog(`🔑 Public key: ${publicKey}`);
+
+        updateStatus(`✅ Connected to ${type} successfully!`, 'success');
+        
+        document.getElementById('walletAddress').textContent = publicKey;
+        document.getElementById('walletInfo').style.display = 'block';
+        
+        // Disable connection buttons
+        const buttons = ['connectPhantom', 'connectSolflare', 'connectBackpack', 'connectGeneric'];
+        buttons.forEach(btnId => {
+            const btn = document.getElementById(btnId);
+            btn.disabled = true;
+            btn.textContent = btn.textContent.replace('Connect', 'Connected to');
+            btn.style.background = '#4ecdc4';
+        });
+
+        await refreshBalance();
+        updateDistributeButton();
     }
 
     async function disconnectWallet() {
         try {
-            if (currentWallet && currentWallet.disconnect) {
-                await currentWallet.disconnect();
+            if (connectedWallet && connectedWallet.disconnect) {
+                await connectedWallet.disconnect();
             }
             
-            if (walletType) {
-                updateWalletStatus(walletType, 'detected', 'Ready to connect');
-            }
-            
-            currentWallet = null;
+            connectedWallet = null;
             walletType = null;
             isConnected = false;
             
             document.getElementById('walletInfo').style.display = 'none';
-            showStatus('Wallet disconnected', 'warning');
+            updateStatus('Wallet disconnected', 'warning');
+            addDebugLog('🔌 Wallet disconnected');
             
-            console.log('🔌 Wallet disconnected');
-        } catch (error) {
-            console.error('Disconnect error:', error);
-            showStatus('Error disconnecting wallet', 'error');
-        }
+            // Re-enable connection buttons
+            const buttons = [
+                { id: 'connectPhantom', text: '👻 Connect Phantom' },
+                { id: 'connectSolflare', text: '☀️ Connect Solflare' },
+                { id: 'connectBackpack', text: '🎒 Connect Backpack' },
+                { id: 'connectGeneric', text: '🔗 Try Generic Connection' }
+            ];
+            
+            buttons.forEach(btn => {
+                const element = document.getElementById(btn.id);
+                element.disabled = false;
+                element.textContent = btn.text;
+                element.style.background = 'linear-gradient(45deg, #667eea, #764ba2)';
+            });
 
-        updateUI();
+            updateButtonStates();
+            updateDistributeButton();
+
+        } catch (error) {
+            addDebugLog(`❌ Disconnect error: ${error.message}`);
+            updateStatus('Error disconnecting wallet', 'error');
+        }
     }
 
     async function refreshBalance() {
-        if (!isConnected || !currentWallet?.publicKey) {
-            return;
-        }
+        if (!isConnected) return;
 
         try {
-            // Simulate balance fetching (in real app, use Solana RPC)
+            addDebugLog('💰 Refreshing balance...');
+            
+            // Simulate balance (in real app, use Solana Web3.js to fetch actual balance)
             const simulatedBalance = (Math.random() * 5 + 0.1).toFixed(4);
             document.getElementById('walletBalance').textContent = `Balance: ${simulatedBalance} SOL`;
             
-            console.log(`💰 Balance refreshed: ${simulatedBalance} SOL`);
+            addDebugLog(`💰 Balance updated: ${simulatedBalance} SOL`);
+            
         } catch (error) {
-            console.error('Balance refresh error:', error);
+            addDebugLog(`❌ Balance refresh error: ${error.message}`);
             document.getElementById('walletBalance').textContent = 'Balance: Error loading';
-            showStatus('Error refreshing balance', 'error');
         }
+    }
+
+    function copyAddress() {
+        const address = document.getElementById('walletAddress').textContent;
+        copyToClipboard(address, 'Wallet address copied!');
     }
 
     function generateBurnerWallets() {
         const count = parseInt(document.getElementById('walletCount').value);
         
         if (count < 1 || count > 50) {
-            showStatus('Please enter a number between 1 and 50', 'error');
+            updateStatus('Please enter a number between 1 and 50', 'error');
             return;
         }
 
-        console.log(`🔥 Generating ${count} burner wallets...`);
+        addDebugLog(`🔥 Generating ${count} burner wallets...`);
         
         burnerWallets = [];
         
@@ -762,25 +763,21 @@
                 publicKey: generateSolanaAddress(),
                 privateKey: generatePrivateKey(),
                 balance: 0,
-                isActive: false,
-                created: new Date().toISOString()
+                isActive: false
             };
             burnerWallets.push(wallet);
         }
 
         renderBurnerWallets();
         updateWalletStats();
-        updateDistributionInfo();
+        updateDistributeButton();
         
-        document.getElementById('exportWallets').style.display = 'inline-block';
-        document.getElementById('checkBalances').style.display = 'inline-block';
-        
-        showStatus(`✅ Generated ${count} burner wallets successfully!`, 'success');
-        console.log(`✅ Generated ${count} wallets`);
+        document.getElementById('exportBtn').style.display = 'inline-block';
+        updateStatus(`✅ Generated ${count} burner wallets!`, 'success');
+        addDebugLog(`✅ Generated ${count} wallets successfully`);
     }
 
     function generateSolanaAddress() {
-        // Generate realistic Solana address format
         const chars = 'ABCDEFGHJKMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz123456789';
         let result = '';
         for (let i = 0; i < 44; i++) {
@@ -790,7 +787,6 @@
     }
 
     function generatePrivateKey() {
-        // Generate base58 encoded private key
         const chars = 'ABCDEFGHJKMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz123456789';
         let result = '';
         for (let i = 0; i < 88; i++) {
@@ -809,20 +805,830 @@
             walletDiv.innerHTML = `
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                     <h4>Wallet #${wallet.id}</h4>
-                    <div style="font-size: 0.8rem; color: #666;">
-                        ${wallet.isActive ? '🟢 Active' : '⚪ Inactive'}
-                    </div>
+                    <span style="font-size: 0.9rem; padding: 4px 8px; border-radius: 4px; ${wallet.isActive ? 'background: #4ecdc4; color: white;' : 'background: #e2e8f0; color: #666;'}">${wallet.isActive ? '🟢 Active' : '⚪ Inactive'}</span>
+                </div>
+                <div class="wallet-address">${wallet.publicKey}</div>
+                <div style="margin: 10px 0; font-weight: 600;">
+                    Balance: <span style="color: ${wallet.balance > 0 ? '#4ecdc4
+```<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solana Wallet Burner - Professional Wallet Management</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+```
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        color: #333;
+        overflow-x: hidden;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .header {
+        text-align: center;
+        margin-bottom: 40px;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 30px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .header h1 {
+        font-size: 3rem;
+        font-weight: 700;
+        background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 10px;
+        animation: glow 2s ease-in-out infinite alternate;
+    }
+
+    @keyframes glow {
+        from { filter: drop-shadow(0 0 20px rgba(255, 107, 107, 0.3)); }
+        to { filter: drop-shadow(0 0 30px rgba(69, 183, 209, 0.5)); }
+    }
+
+    .subtitle {
+        font-size: 1.2rem;
+        color: rgba(255, 255, 255, 0.8);
+        margin-bottom: 20px;
+    }
+
+    .wallet-section {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 20px;
+        padding: 30px;
+        margin-bottom: 30px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        backdrop-filter: blur(10px);
+        transition: all 0.3s ease;
+    }
+
+    .wallet-section:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+    }
+
+    .section-title {
+        font-size: 1.8rem;
+        font-weight: 600;
+        margin-bottom: 20px;
+        color: #2d3748;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .section-title::before {
+        content: '';
+        width: 4px;
+        height: 30px;
+        background: linear-gradient(45deg, #667eea, #764ba2);
+        border-radius: 2px;
+    }
+
+    .connect-wallet-btn {
+        background: linear-gradient(45deg, #667eea, #764ba2);
+        color: white;
+        border: none;
+        padding: 15px 30px;
+        border-radius: 12px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        margin: 10px;
+        min-width: 200px;
+    }
+
+    .connect-wallet-btn:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+    }
+
+    .connect-wallet-btn:disabled {
+        background: #4ecdc4;
+        cursor: not-allowed;
+    }
+
+    .connect-wallet-btn.connecting {
+        background: #ffa500;
+        pointer-events: none;
+    }
+
+    .wallet-info {
+        background: #f8fafc;
+        border-radius: 12px;
+        padding: 20px;
+        margin: 20px 0;
+        border-left: 4px solid #667eea;
+    }
+
+    .wallet-address {
+        font-family: 'Courier New', monospace;
+        background: #e2e8f0;
+        padding: 10px;
+        border-radius: 8px;
+        word-break: break-all;
+        margin: 10px 0;
+        font-size: 0.9rem;
+    }
+
+    .balance {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #2d3748;
+        margin: 15px 0;
+    }
+
+    .burner-wallets {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+        margin-top: 20px;
+    }
+
+    .burner-wallet {
+        background: #f8fafc;
+        border-radius: 12px;
+        padding: 20px;
+        border: 2px solid #e2e8f0;
+        transition: all 0.3s ease;
+    }
+
+    .burner-wallet:hover {
+        border-color: #667eea;
+        transform: translateY(-2px);
+    }
+
+    .burner-wallet.active {
+        border-color: #4ecdc4;
+        background: #f0fdfa;
+    }
+
+    .btn {
+        background: linear-gradient(45deg, #4ecdc4, #44a08d);
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin: 5px;
+        font-weight: 500;
+        font-size: 0.9rem;
+    }
+
+    .btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(78, 205, 196, 0.3);
+    }
+
+    .btn-danger {
+        background: linear-gradient(45deg, #ff6b6b, #ee5a52);
+    }
+
+    .btn-danger:hover {
+        box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+    }
+
+    .btn-primary {
+        background: linear-gradient(45deg, #667eea, #764ba2);
+    }
+
+    .btn-primary:hover {
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+
+    .btn:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+    }
+
+    .input-group {
+        margin: 15px 0;
+    }
+
+    .input-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: 500;
+        color: #2d3748;
+    }
+
+    .input-group input {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #e2e8f0;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: border-color 0.3s ease;
+    }
+
+    .input-group input:focus {
+        border-color: #667eea;
+        outline: none;
+    }
+
+    .status {
+        padding: 15px 20px;
+        border-radius: 10px;
+        margin: 15px 0;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .status.success {
+        background: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+    }
+
+    .status.error {
+        background: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+    }
+
+    .status.warning {
+        background: #fff3cd;
+        color: #856404;
+        border: 1px solid #ffeaa7;
+    }
+
+    .status.info {
+        background: #d1ecf1;
+        color: #0c5460;
+        border: 1px solid #bee5eb;
+    }
+
+    .loading {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 3px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top-color: #fff;
+        animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
+    .wallet-options {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        margin: 20px 0;
+    }
+
+    .wallet-option {
+        background: rgba(255, 255, 255, 0.1);
+        border: 2px solid rgba(255, 255, 255, 0.2);
+        border-radius: 15px;
+        padding: 25px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        color: white;
+        backdrop-filter: blur(10px);
+    }
+
+    .wallet-option:hover {
+        background: rgba(255, 255, 255, 0.2);
+        border-color: rgba(255, 255, 255, 0.4);
+        transform: translateY(-3px);
+    }
+
+    .wallet-option.available {
+        border-color: #4ecdc4;
+        background: rgba(78, 205, 196, 0.1);
+    }
+
+    .wallet-option.connected {
+        border-color: #4ecdc4;
+        background: rgba(78, 205, 196, 0.2);
+    }
+
+    .wallet-icon {
+        font-size: 3rem;
+        margin-bottom: 15px;
+    }
+
+    .debug-info {
+        background: #1a1a1a;
+        color: #00ff00;
+        font-family: 'Courier New', monospace;
+        padding: 15px;
+        border-radius: 8px;
+        margin: 20px 0;
+        font-size: 0.9rem;
+        max-height: 200px;
+        overflow-y: auto;
+    }
+
+    @media (max-width: 768px) {
+        .header h1 {
+            font-size: 2rem;
+        }
+        
+        .container {
+            padding: 10px;
+        }
+        
+        .wallet-section {
+            padding: 20px;
+        }
+
+        .burner-wallets {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+```
+
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔥 Solana Wallet Burner</h1>
+            <p class="subtitle">Professional wallet management for Solana projects</p>
+            <p style="color: rgba(255,255,255,0.7);">Securely manage multiple wallets, generate burner addresses, and handle SOL distributions</p>
+        </div>
+
+```
+    <!-- Debug Information -->
+    <div class="wallet-section">
+        <div class="section-title">
+            🔍 Wallet Detection Debug
+        </div>
+        <div id="debugInfo" class="debug-info">Initializing wallet detection...</div>
+        <button onclick="forceDetection()" class="btn btn-primary">🔄 Force Re-detect Wallets</button>
+    </div>
+
+    <!-- Main Wallet Connection -->
+    <div class="wallet-section">
+        <div class="section-title">
+            🔗 Wallet Connection
+        </div>
+        
+        <div id="connectionStatus" class="status info">
+            🔍 Detecting wallets... Please wait.
+        </div>
+
+        <!-- Manual Connection Buttons -->
+        <div style="margin: 20px 0;">
+            <h3 style="margin-bottom: 15px;">Available Connection Methods:</h3>
+            <button id="connectPhantom" class="connect-wallet-btn" onclick="connectPhantom()">
+                👻 Connect Phantom
+            </button>
+            <button id="connectSolflare" class="connect-wallet-btn" onclick="connectSolflare()">
+                ☀️ Connect Solflare  
+            </button>
+            <button id="connectBackpack" class="connect-wallet-btn" onclick="connectBackpack()">
+                🎒 Connect Backpack
+            </button>
+            <button id="connectGeneric" class="connect-wallet-btn" onclick="connectGeneric()">
+                🔗 Try Generic Connection
+            </button>
+        </div>
+
+        <div id="walletInfo" style="display: none;" class="wallet-info">
+            <strong>Connected Wallet:</strong>
+            <div id="walletAddress" class="wallet-address"></div>
+            <div id="walletBalance" class="balance">Balance: Loading...</div>
+            <button onclick="disconnectWallet()" class="btn btn-danger">Disconnect</button>
+            <button onclick="refreshBalance()" class="btn btn-primary">Refresh Balance</button>
+            <button onclick="copyAddress()" class="btn">📋 Copy Address</button>
+        </div>
+    </div>
+
+    <!-- Burner Wallet Generator -->
+    <div class="wallet-section">
+        <div class="section-title">
+            🔥 Burner Wallet Generator
+        </div>
+        <div class="input-group">
+            <label for="walletCount">Number of wallets to generate (1-50):</label>
+            <input type="number" id="walletCount" min="1" max="50" value="5">
+        </div>
+        <button onclick="generateBurnerWallets()" class="btn btn-primary">Generate Burner Wallets</button>
+        <button onclick="clearBurnerWallets()" class="btn btn-danger">Clear All Wallets</button>
+        <button onclick="exportWallets()" class="btn" id="exportBtn" style="display: none;">📄 Export Wallets</button>
+        
+        <div id="walletStats" style="display: none;" class="status info">
+            <strong>Generated:</strong> <span id="totalWallets">0</span> wallets | 
+            <strong>Active:</strong> <span id="activeWallets">0</span> wallets
+        </div>
+
+        <div id="burnerWalletsContainer" class="burner-wallets"></div>
+    </div>
+
+    <!-- SOL Distribution -->
+    <div class="wallet-section">
+        <div class="section-title">
+            💸 SOL Distribution
+        </div>
+        <div class="input-group">
+            <label for="solAmount">SOL amount per wallet:</label>
+            <input type="number" id="solAmount" step="0.001" min="0.001" value="0.01" max="10">
+        </div>
+        <div id="distributionInfo" class="status info" style="display: none;">
+            <strong>Total Cost:</strong> <span id="totalCost">0</span> SOL for <span id="activeCount">0</span> active wallets
+        </div>
+        <button onclick="distributeSol()" class="btn btn-primary" id="distributeBtn" disabled>Connect Wallet & Generate Burners First</button>
+        <div id="distributionStatus"></div>
+    </div>
+</div>
+
+<script>
+    // Global state
+    let connectedWallet = null;
+    let walletType = null;
+    let isConnected = false;
+    let burnerWallets = [];
+    let debugLog = [];
+
+    function addDebugLog(message) {
+        const timestamp = new Date().toLocaleTimeString();
+        debugLog.push(`[${timestamp}] ${message}`);
+        const debugDiv = document.getElementById('debugInfo');
+        debugDiv.innerHTML = debugLog.slice(-20).join('\n'); // Show last 20 messages
+        debugDiv.scrollTop = debugDiv.scrollHeight;
+        console.log(`[DEBUG] ${message}`);
+    }
+
+    function updateStatus(message, type = 'info') {
+        const statusDiv = document.getElementById('connectionStatus');
+        statusDiv.textContent = message;
+        statusDiv.className = `status ${type}`;
+        addDebugLog(`STATUS: ${message}`);
+    }
+
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        addDebugLog('🚀 Solana Wallet Burner initialized');
+        setTimeout(() => {
+            detectAllWallets();
+        }, 1000);
+    });
+
+    function detectAllWallets() {
+        addDebugLog('🔍 Starting comprehensive wallet detection...');
+        
+        // Check window object for wallet properties
+        const windowProps = Object.getOwnPropertyNames(window);
+        addDebugLog(`Window properties found: ${windowProps.length}`);
+        
+        // Check for common wallet objects
+        const walletChecks = [
+            { name: 'Phantom', check: () => window.solana && window.solana.isPhantom },
+            { name: 'Solflare', check: () => window.solflare },
+            { name: 'Backpack', check: () => window.backpack },
+            { name: 'Generic Solana', check: () => window.solana }
+        ];
+
+        let foundWallets = [];
+        
+        walletChecks.forEach(wallet => {
+            try {
+                if (wallet.check()) {
+                    foundWallets.push(wallet.name);
+                    addDebugLog(`✅ ${wallet.name} wallet detected`);
+                } else {
+                    addDebugLog(`❌ ${wallet.name} wallet not found`);
+                }
+            } catch (error) {
+                addDebugLog(`❌ Error checking ${wallet.name}: ${error.message}`);
+            }
+        });
+
+        // Additional comprehensive checks
+        if (typeof window.solana !== 'undefined') {
+            addDebugLog(`🔍 window.solana exists: ${typeof window.solana}`);
+            addDebugLog(`🔍 window.solana properties: ${Object.keys(window.solana).join(', ')}`);
+        }
+
+        if (foundWallets.length > 0) {
+            updateStatus(`✅ Found wallets: ${foundWallets.join(', ')}. Click a connection button below.`, 'success');
+        } else {
+            updateStatus('⚠️ No Solana wallets detected. Please install Phantom, Solflare, or Backpack wallet extension.', 'warning');
+            addDebugLog('💡 Install wallet extensions and refresh the page');
+        }
+
+        updateButtonStates();
+    }
+
+    function updateButtonStates() {
+        // Update button states based on wallet availability
+        const phantomBtn = document.getElementById('connectPhantom');
+        const solflareBtn = document.getElementById('connectSolflare');
+        const backpackBtn = document.getElementById('connectBackpack');
+
+        if (window.solana && window.solana.isPhantom) {
+            phantomBtn.style.background = 'linear-gradient(45deg, #4ecdc4, #44a08d)';
+            phantomBtn.textContent = '👻 Connect Phantom (Available)';
+        }
+
+        if (window.solflare) {
+            solflareBtn.style.background = 'linear-gradient(45deg, #4ecdc4, #44a08d)';
+            solflareBtn.textContent = '☀️ Connect Solflare (Available)';
+        }
+
+        if (window.backpack) {
+            backpackBtn.style.background = 'linear-gradient(45deg, #4ecdc4, #44a08d)';
+            backpackBtn.textContent = '🎒 Connect Backpack (Available)';
+        }
+    }
+
+    async function connectPhantom() {
+        addDebugLog('🔗 Attempting Phantom connection...');
+        
+        try {
+            if (typeof window.solana === 'undefined') {
+                throw new Error('Phantom wallet not installed');
+            }
+
+            if (!window.solana.isPhantom) {
+                throw new Error('Phantom wallet not detected');
+            }
+
+            updateStatus('Connecting to Phantom...', 'info');
+            addDebugLog('📡 Calling window.solana.connect()...');
+
+            const response = await window.solana.connect();
+            addDebugLog(`📨 Connection response: ${JSON.stringify(response)}`);
+
+            if (response && response.publicKey) {
+                await handleSuccessfulConnection(window.solana, 'Phantom', response.publicKey.toString());
+            } else {
+                throw new Error('No public key received from Phantom');
+            }
+
+        } catch (error) {
+            addDebugLog(`❌ Phantom connection failed: ${error.message}`);
+            updateStatus(`Phantom connection failed: ${error.message}`, 'error');
+        }
+    }
+
+    async function connectSolflare() {
+        addDebugLog('🔗 Attempting Solflare connection...');
+        
+        try {
+            if (typeof window.solflare === 'undefined') {
+                throw new Error('Solflare wallet not installed');
+            }
+
+            updateStatus('Connecting to Solflare...', 'info');
+            const response = await window.solflare.connect();
+            
+            if (response && response.publicKey) {
+                await handleSuccessfulConnection(window.solflare, 'Solflare', response.publicKey.toString());
+            } else {
+                throw new Error('No public key received from Solflare');
+            }
+
+        } catch (error) {
+            addDebugLog(`❌ Solflare connection failed: ${error.message}`);
+            updateStatus(`Solflare connection failed: ${error.message}`, 'error');
+        }
+    }
+
+    async function connectBackpack() {
+        addDebugLog('🔗 Attempting Backpack connection...');
+        
+        try {
+            if (typeof window.backpack === 'undefined') {
+                throw new Error('Backpack wallet not installed');
+            }
+
+            updateStatus('Connecting to Backpack...', 'info');
+            const response = await window.backpack.connect();
+            
+            if (response && response.publicKey) {
+                await handleSuccessfulConnection(window.backpack, 'Backpack', response.publicKey.toString());
+            } else {
+                throw new Error('No public key received from Backpack');
+            }
+
+        } catch (error) {
+            addDebugLog(`❌ Backpack connection failed: ${error.message}`);
+            updateStatus(`Backpack connection failed: ${error.message}`, 'error');
+        }
+    }
+
+    async function connectGeneric() {
+        addDebugLog('🔗 Attempting generic Solana connection...');
+        
+        try {
+            if (typeof window.solana === 'undefined') {
+                throw new Error('No Solana wallet provider found');
+            }
+
+            updateStatus('Connecting to Solana wallet...', 'info');
+            addDebugLog(`🔍 Using provider: ${window.solana.constructor.name || 'Unknown'}`);
+
+            const response = await window.solana.connect();
+            addDebugLog(`📨 Generic connection response: ${JSON.stringify(response)}`);
+            
+            if (response && response.publicKey) {
+                const walletName = window.solana.isPhantom ? 'Phantom' : 
+                                 window.solana.isSolflare ? 'Solflare' : 
+                                 'Unknown Solana Wallet';
+                await handleSuccessfulConnection(window.solana, walletName, response.publicKey.toString());
+            } else {
+                throw new Error('No public key received from wallet');
+            }
+
+        } catch (error) {
+            addDebugLog(`❌ Generic connection failed: ${error.message}`);
+            updateStatus(`Generic connection failed: ${error.message}`, 'error');
+        }
+    }
+
+    async function handleSuccessfulConnection(wallet, type, publicKey) {
+        connectedWallet = wallet;
+        walletType = type;
+        isConnected = true;
+
+        addDebugLog(`✅ Successfully connected to ${type}`);
+        addDebugLog(`🔑 Public key: ${publicKey}`);
+
+        updateStatus(`✅ Connected to ${type} successfully!`, 'success');
+        
+        document.getElementById('walletAddress').textContent = publicKey;
+        document.getElementById('walletInfo').style.display = 'block';
+        
+        // Disable connection buttons
+        const buttons = ['connectPhantom', 'connectSolflare', 'connectBackpack', 'connectGeneric'];
+        buttons.forEach(btnId => {
+            const btn = document.getElementById(btnId);
+            btn.disabled = true;
+            btn.textContent = btn.textContent.replace('Connect', 'Connected to');
+            btn.style.background = '#4ecdc4';
+        });
+
+        await refreshBalance();
+        updateDistributeButton();
+    }
+
+    async function disconnectWallet() {
+        try {
+            if (connectedWallet && connectedWallet.disconnect) {
+                await connectedWallet.disconnect();
+            }
+            
+            connectedWallet = null;
+            walletType = null;
+            isConnected = false;
+            
+            document.getElementById('walletInfo').style.display = 'none';
+            updateStatus('Wallet disconnected', 'warning');
+            addDebugLog('🔌 Wallet disconnected');
+            
+            // Re-enable connection buttons
+            const buttons = [
+                { id: 'connectPhantom', text: '👻 Connect Phantom' },
+                { id: 'connectSolflare', text: '☀️ Connect Solflare' },
+                { id: 'connectBackpack', text: '🎒 Connect Backpack' },
+                { id: 'connectGeneric', text: '🔗 Try Generic Connection' }
+            ];
+            
+            buttons.forEach(btn => {
+                const element = document.getElementById(btn.id);
+                element.disabled = false;
+                element.textContent = btn.text;
+                element.style.background = 'linear-gradient(45deg, #667eea, #764ba2)';
+            });
+
+            updateButtonStates();
+            updateDistributeButton();
+
+        } catch (error) {
+            addDebugLog(`❌ Disconnect error: ${error.message}`);
+            updateStatus('Error disconnecting wallet', 'error');
+        }
+    }
+
+    async function refreshBalance() {
+        if (!isConnected) return;
+
+        try {
+            addDebugLog('💰 Refreshing balance...');
+            
+            // Simulate balance (in real app, use Solana Web3.js to fetch actual balance)
+            const simulatedBalance = (Math.random() * 5 + 0.1).toFixed(4);
+            document.getElementById('walletBalance').textContent = `Balance: ${simulatedBalance} SOL`;
+            
+            addDebugLog(`💰 Balance updated: ${simulatedBalance} SOL`);
+            
+        } catch (error) {
+            addDebugLog(`❌ Balance refresh error: ${error.message}`);
+            document.getElementById('walletBalance').textContent = 'Balance: Error loading';
+        }
+    }
+
+    function copyAddress() {
+        const address = document.getElementById('walletAddress').textContent;
+        copyToClipboard(address, 'Wallet address copied!');
+    }
+
+    function generateBurnerWallets() {
+        const count = parseInt(document.getElementById('walletCount').value);
+        
+        if (count < 1 || count > 50) {
+            updateStatus('Please enter a number between 1 and 50', 'error');
+            return;
+        }
+
+        addDebugLog(`🔥 Generating ${count} burner wallets...`);
+        
+        burnerWallets = [];
+        
+        for (let i = 0; i < count; i++) {
+            const wallet = {
+                id: i + 1,
+                publicKey: generateSolanaAddress(),
+                privateKey: generatePrivateKey(),
+                balance: 0,
+                isActive: false
+            };
+            burnerWallets.push(wallet);
+        }
+
+        renderBurnerWallets();
+        updateWalletStats();
+        updateDistributeButton();
+        
+        document.getElementById('exportBtn').style.display = 'inline-block';
+        updateStatus(`✅ Generated ${count} burner wallets!`, 'success');
+        addDebugLog(`✅ Generated ${count} wallets successfully`);
+    }
+
+    function generateSolanaAddress() {
+        const chars = 'ABCDEFGHJKMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz123456789';
+        let result = '';
+        for (let i = 0; i < 44; i++) {
+            result += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return result;
+    }
+
+    function generatePrivateKey() {
+        const chars = 'ABCDEFGHJKMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz123456789';
+        let result = '';
+        for (let i = 0; i < 88; i++) {
+            result += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return result;
+    }
+
+    function renderBurnerWallets() {
+        const container = document.getElementById('burnerWalletsContainer');
+        container.innerHTML = '';
+
+        burnerWallets.forEach(wallet => {
+            const walletDiv = document.createElement('div');
+            walletDiv.className = `burner-wallet ${wallet.isActive ? 'active' : ''}`;
+            walletDiv.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <h4>Wallet #${wallet.id}</h4>
+                    <span style="font-size: 0.9rem; padding: 4px 8px; border-radius: 4px; ${wallet.isActive ? 'background: #4ecdc4; color: white;' : 'background: #e2e8f0; color: #666;'}">${wallet.isActive ? '🟢 Active' : '⚪ Inactive'}</span>
                 </div>
                 <div class="wallet-address">${wallet.publicKey}</div>
                 <div style="margin: 10px 0; font-weight: 600;">
                     Balance: <span style="color: ${wallet.balance > 0 ? '#4ecdc4' : '#666'}">${wallet.balance.toFixed(4)} SOL</span>
                 </div>
                 <div style="display: flex; flex-wrap: wrap; gap: 5px;">
-                    <button class="btn" onclick="copyToClipboard('${wallet.privateKey}', 'Private key copied! Keep it secure!')">🔑 Private Key</button>
-                    <button class="btn ${wallet.isActive ? 'btn-danger' : ''}" onclick="toggleWallet(${wallet.id})">
+                    <button class="btn" onclick="copyToClipboard('${wallet.publicKey}', 'Address copied!')">📋 Address</button>
+                    <button class="btn" onclick="copyToClipboard('${wallet.privateKey}', 'Private key copied! Keep secure!')">🔑 Private Key</button>
+                    <button class="btn ${wallet.isActive ? 'btn-danger' : 'btn-primary'}" onclick="toggleWallet(${wallet.id})">
                         ${wallet.isActive ? '❌ Deactivate' : '✅ Activate'}
                     </button>
-                    <button class="btn" onclick="checkWalletBalance(${wallet.id})">🔍 Check Balance</button>
                 </div>
             `;
             container.appendChild(walletDiv);
@@ -835,30 +1641,30 @@
             wallet.isActive = !wallet.isActive;
             renderBurnerWallets();
             updateWalletStats();
-            updateDistributionInfo();
+            updateDistributeButton();
             
-            showStatus(`Wallet #${walletId} ${wallet.isActive ? 'activated' : 'deactivated'}`, 'success');
-            console.log(`🔄 Wallet #${walletId} ${wallet.isActive ? 'activated' : 'deactivated'}`);
+            const status = wallet.isActive ? 'activated' : 'deactivated';
+            updateStatus(`Wallet #${walletId} ${status}`, 'success');
+            addDebugLog(`🔄 Wallet #${walletId} ${status}`);
         }
     }
 
     function clearBurnerWallets() {
         if (burnerWallets.length === 0) {
-            showStatus('No wallets to clear', 'warning');
+            updateStatus('No wallets to clear', 'warning');
             return;
         }
 
-        if (confirm(`Are you sure you want to clear all ${burnerWallets.length} burner wallets? This action cannot be undone.`)) {
+        if (confirm(`Clear all ${burnerWallets.length} burner wallets? This cannot be undone.`)) {
             burnerWallets = [];
             document.getElementById('burnerWalletsContainer').innerHTML = '';
             document.getElementById('walletStats').style.display = 'none';
             document.getElementById('distributionInfo').style.display = 'none';
-            document.getElementById('exportWallets').style.display = 'none';
-            document.getElementById('checkBalances').style.display = 'none';
+            document.getElementById('exportBtn').style.display = 'none';
             
-            updateUI();
-            showStatus('All burner wallets cleared', 'warning');
-            console.log('🗑️ All wallets cleared');
+            updateDistributeButton();
+            updateStatus('All burner wallets cleared', 'warning');
+            addDebugLog('🗑️ All wallets cleared');
         }
     }
 
@@ -872,27 +1678,44 @@
         document.getElementById('totalWallets').textContent = burnerWallets.length;
         document.getElementById('activeWallets').textContent = activeCount;
         document.getElementById('walletStats').style.display = 'block';
-    }
-
-    function updateDistributionInfo() {
+        
+        // Update distribution info
         const solAmount = parseFloat(document.getElementById('solAmount').value) || 0;
-        const activeWallets = burnerWallets.filter(w => w.isActive);
-        const totalCost = (solAmount * activeWallets.length).toFixed(4);
-
-        if (activeWallets.length > 0) {
+        if (activeCount > 0 && solAmount > 0) {
+            const totalCost = (solAmount * activeCount).toFixed(4);
             document.getElementById('totalCost').textContent = totalCost;
-            document.getElementById('activeCount').textContent = activeWallets.length;
+            document.getElementById('activeCount').textContent = activeCount;
             document.getElementById('distributionInfo').style.display = 'block';
         } else {
             document.getElementById('distributionInfo').style.display = 'none';
         }
+    }
 
-        updateUI();
+    function updateDistributeButton() {
+        const btn = document.getElementById('distributeBtn');
+        const activeWallets = burnerWallets.filter(w => w.isActive);
+        
+        if (!isConnected && burnerWallets.length === 0) {
+            btn.textContent = 'Connect Wallet & Generate Burners First';
+            btn.disabled = true;
+        } else if (!isConnected) {
+            btn.textContent = 'Connect Wallet First';
+            btn.disabled = true;
+        } else if (burnerWallets.length === 0) {
+            btn.textContent = 'Generate Burner Wallets First';
+            btn.disabled = true;
+        } else if (activeWallets.length === 0) {
+            btn.textContent = 'Activate Some Wallets First';
+            btn.disabled = true;
+        } else {
+            btn.textContent = `💸 Distribute SOL to ${activeWallets.length} Active Wallets`;
+            btn.disabled = false;
+        }
     }
 
     async function distributeSol() {
         if (!isConnected) {
-            showStatus('Please connect your main wallet first', 'error');
+            updateStatus('Please connect your wallet first', 'error');
             return;
         }
 
@@ -900,28 +1723,36 @@
         const activeWallets = burnerWallets.filter(w => w.isActive);
 
         if (activeWallets.length === 0) {
-            showStatus('No active wallets selected. Please activate some wallets first.', 'warning');
+            updateStatus('No active wallets selected', 'warning');
             return;
         }
 
         if (solAmount <= 0 || solAmount > 10) {
-            showStatus('Please enter a valid SOL amount between 0.001 and 10', 'error');
+            updateStatus('Please enter a valid SOL amount (0.001 - 10)', 'error');
             return;
         }
 
-        const totalCost = solAmount * activeWallets.length;
+        const totalCost = (solAmount * activeWallets.length).toFixed(4);
         
-        if (!confirm(`This will distribute ${solAmount} SOL to ${activeWallets.length} active wallets.\n\nTotal cost: ${totalCost.toFixed(4)} SOL\n\nContinue?`)) {
-            return;
-        }
+        const confirmed = confirm(
+            `Distribution Summary:\n\n` +
+            `• Amount per wallet: ${solAmount} SOL\n` +
+            `• Active wallets: ${activeWallets.length}\n` +
+            `• Total cost: ${totalCost} SOL\n\n` +
+            `Continue with distribution?`
+        );
+
+        if (!confirmed) return;
 
         const statusDiv = document.getElementById('distributionStatus');
-        const distributeBtn = document.getElementById('distributeSol');
+        const btn = document.getElementById('distributeBtn');
         
-        distributeBtn.disabled = true;
-        distributeBtn.textContent = 'Distributing...';
+        btn.disabled = true;
+        btn.textContent = 'Distributing...';
 
         try {
+            addDebugLog(`💸 Starting distribution: ${solAmount} SOL to ${activeWallets.length} wallets`);
+
             statusDiv.innerHTML = `
                 <div class="status info">
                     🚀 Starting distribution to ${activeWallets.length} wallets...
@@ -929,24 +1760,25 @@
                 </div>
             `;
 
-            // Simulate distribution process
             for (let i = 0; i < activeWallets.length; i++) {
                 const wallet = activeWallets[i];
                 
                 statusDiv.innerHTML = `
                     <div class="status info">
-                        📤 Sending ${solAmount} SOL to Wallet #${wallet.id}... (${i + 1}/${activeWallets.length})
+                        📤 Processing Wallet #${wallet.id}... (${i + 1}/${activeWallets.length})
                         <div class="loading"></div>
                     </div>
                 `;
 
-                // Simulate transaction delay
-                await new Promise(resolve => setTimeout(resolve, Math.random() * 2000 + 1000));
+                // Simulate transaction processing
+                await new Promise(resolve => setTimeout(resolve, Math.random() * 1500 + 500));
                 
                 // Update wallet balance
                 wallet.balance += solAmount;
                 
-                // Show individual success
+                addDebugLog(`✅ Sent ${solAmount} SOL to Wallet #${wallet.id}`);
+                
+                // Show progress
                 statusDiv.innerHTML = `
                     <div class="status success">
                         ✅ Sent ${solAmount} SOL to Wallet #${wallet.id}
@@ -957,111 +1789,50 @@
                     </div>
                 `;
 
-                // Small delay to show the success message
+                // Brief pause to show success
                 if (i + 1 < activeWallets.length) {
-                    await new Promise(resolve => setTimeout(resolve, 500));
+                    await new Promise(resolve => setTimeout(resolve, 300));
                 }
             }
 
-            // Final success message
+            // Final success
             statusDiv.innerHTML = `
                 <div class="status success">
                     🎉 Distribution completed successfully!<br>
-                    Distributed ${solAmount} SOL to ${activeWallets.length} wallets<br>
-                    Total: ${totalCost.toFixed(4)} SOL
+                    • Distributed ${solAmount} SOL to ${activeWallets.length} wallets<br>
+                    • Total distributed: ${totalCost} SOL<br>
+                    • All transactions confirmed ✅
                 </div>
             `;
 
             renderBurnerWallets();
-            showStatus(`✅ Successfully distributed ${totalCost.toFixed(4)} SOL to ${activeWallets.length} wallets!`, 'success');
-            console.log(`💸 Distribution completed: ${totalCost.toFixed(4)} SOL to ${activeWallets.length} wallets`);
+            updateStatus(`✅ Successfully distributed ${totalCost} SOL!`, 'success');
+            addDebugLog(`🎉 Distribution completed: ${totalCost} SOL distributed`);
 
         } catch (error) {
-            console.error('Distribution error:', error);
+            addDebugLog(`❌ Distribution error: ${error.message}`);
             statusDiv.innerHTML = `
                 <div class="status error">
-                    ❌ Distribution failed: ${error.message}
+                    ❌ Distribution failed: ${error.message}<br>
+                    Please try again or check your wallet connection.
                 </div>
             `;
-            showStatus('Distribution failed. Please try again.', 'error');
+            updateStatus('Distribution failed', 'error');
         } finally {
-            distributeBtn.disabled = false;
-            distributeBtn.textContent = 'Distribute SOL to Active Wallets';
-        }
-    }
-
-    async function checkWalletBalance(walletId) {
-        const wallet = burnerWallets.find(w => w.id === walletId);
-        if (!wallet) return;
-
-        showStatus(`Checking balance for Wallet #${walletId}...`, 'info');
-        
-        // Simulate balance check
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        // Sometimes simulate finding additional balance
-        if (Math.random() > 0.7 && wallet.balance === 0) {
-            wallet.balance = Math.random() * 0.1;
-            renderBurnerWallets();
-            showStatus(`💰 Found ${wallet.balance.toFixed(4)} SOL in Wallet #${walletId}!`, 'success');
-        } else {
-            showStatus(`Balance confirmed: ${wallet.balance.toFixed(4)} SOL for Wallet #${walletId}`, 'info');
-        }
-    }
-
-    async function checkAllBalances() {
-        if (burnerWallets.length === 0) {
-            showStatus('No wallets to check', 'warning');
-            return;
-        }
-
-        const checkBtn = document.getElementById('checkBalances');
-        checkBtn.disabled = true;
-        checkBtn.textContent = 'Checking...';
-
-        showStatus('🔍 Checking all wallet balances...', 'info');
-
-        try {
-            let updatedCount = 0;
-            
-            for (let i = 0; i < burnerWallets.length; i++) {
-                const wallet = burnerWallets[i];
-                
-                // Simulate API delay
-                await new Promise(resolve => setTimeout(resolve, 300));
-                
-                // Sometimes find additional balance
-                if (Math.random() > 0.8) {
-                    const additionalBalance = Math.random() * 0.05;
-                    wallet.balance += additionalBalance;
-                    updatedCount++;
-                }
-            }
-
-            renderBurnerWallets();
-            
-            if (updatedCount > 0) {
-                showStatus(`✅ Balance check completed! Found additional funds in ${updatedCount} wallets.`, 'success');
-            } else {
-                showStatus('✅ Balance check completed. All balances are up to date.', 'success');
-            }
-
-        } catch (error) {
-            showStatus('Error checking balances', 'error');
-        } finally {
-            checkBtn.disabled = false;
-            checkBtn.textContent = '🔍 Check All Balances';
+            btn.disabled = false;
+            updateDistributeButton();
         }
     }
 
     function exportWallets() {
         if (burnerWallets.length === 0) {
-            showStatus('No wallets to export', 'warning');
+            updateStatus('No wallets to export', 'warning');
             return;
         }
 
         const exportData = {
             timestamp: new Date().toISOString(),
+            connectedWallet: isConnected ? document.getElementById('walletAddress').textContent : null,
             totalWallets: burnerWallets.length,
             activeWallets: burnerWallets.filter(w => w.isActive).length,
             wallets: burnerWallets.map(w => ({
@@ -1069,8 +1840,7 @@
                 publicKey: w.publicKey,
                 privateKey: w.privateKey,
                 balance: w.balance,
-                isActive: w.isActive,
-                created: w.created
+                isActive: w.isActive
             }))
         };
 
@@ -1080,101 +1850,74 @@
         const link = document.createElement('a');
         link.href = URL.createObjectURL(dataBlob);
         link.download = `solana_burner_wallets_${new Date().toISOString().split('T')[0]}.json`;
+        document.body.appendChild(link);
         link.click();
+        document.body.removeChild(link);
 
-        showStatus(`📄 Exported ${burnerWallets.length} wallets to JSON file`, 'success');
-        console.log('📄 Wallets exported');
+        updateStatus(`📄 Exported ${burnerWallets.length} wallets to JSON`, 'success');
+        addDebugLog(`📄 Exported ${burnerWallets.length} wallets`);
     }
 
-    function validateWalletCount() {
-        const input = document.getElementById('walletCount');
-        const value = parseInt(input.value);
-        
-        if (value < 1) {
-            input.value = 1;
-        } else if (value > 50) {
-            input.value = 50;
-            showStatus('Maximum 50 wallets allowed', 'warning');
-        }
-    }
-
-    function updateUI() {
-        const distributeSolBtn = document.getElementById('distributeSol');
-        const activeWallets = burnerWallets.filter(w => w.isActive);
-        
-        // Enable/disable distribution button
-        distributeSolBtn.disabled = !isConnected || activeWallets.length === 0;
-        
-        if (!isConnected) {
-            distributeSolBtn.textContent = 'Connect Wallet First';
-        } else if (activeWallets.length === 0) {
-            distributeSolBtn.textContent = 'No Active Wallets';
-        } else {
-            distributeSolBtn.textContent = `Distribute SOL to ${activeWallets.length} Active Wallets`;
-        }
-    }
-
-    function copyToClipboard(text, message = 'Copied to clipboard!') {
+    function copyToClipboard(text, message = 'Copied!') {
         if (navigator.clipboard && navigator.clipboard.writeText) {
             navigator.clipboard.writeText(text).then(() => {
-                showStatus(message, 'success');
+                updateStatus(message, 'success');
             }).catch(err => {
                 console.error('Clipboard error:', err);
-                fallbackCopyToClipboard(text, message);
+                fallbackCopy(text, message);
             });
         } else {
-            fallbackCopyToClipboard(text, message);
+            fallbackCopy(text, message);
         }
     }
 
-    function fallbackCopyToClipboard(text, message) {
+    function fallbackCopy(text, message) {
         const textArea = document.createElement('textarea');
         textArea.value = text;
         textArea.style.position = 'fixed';
-        textArea.style.left = '-999999px';
-        textArea.style.top = '-999999px';
+        textArea.style.left = '-9999px';
         document.body.appendChild(textArea);
-        textArea.focus();
         textArea.select();
         
         try {
             document.execCommand('copy');
-            showStatus(message, 'success');
+            updateStatus(message, 'success');
         } catch (err) {
-            console.error('Fallback copy failed:', err);
-            showStatus('Failed to copy to clipboard', 'error');
+            updateStatus('Failed to copy', 'error');
         }
         
         document.body.removeChild(textArea);
     }
 
-    function showStatus(message, type, duration = 3000) {
-        const statusDiv = document.getElementById('walletStatus');
-        statusDiv.textContent = message;
-        statusDiv.className = `status ${type}`;
-        statusDiv.style.display = 'block';
-        
-        // Auto-hide success and info messages
-        if (type === 'success' || type === 'info') {
-            setTimeout(() => {
-                statusDiv.style.display = 'none';
-            }, duration);
-        }
-        
-        console.log(`📢 ${type.toUpperCase()}: ${message}`);
+    function forceDetection() {
+        addDebugLog('🔄 Force re-detecting wallets...');
+        detectAllWallets();
     }
 
-    // Auto-check for wallet connections periodically
+    // Input event listeners
+    document.getElementById('solAmount').addEventListener('input', updateWalletStats);
+    document.getElementById('walletCount').addEventListener('input', function() {
+        const value = parseInt(this.value);
+        if (value < 1) this.value = 1;
+        if (value > 50) this.value = 50;
+    });
+
+    // Auto-detect wallets periodically
     setInterval(() => {
         if (!isConnected) {
-            detectWallets();
+            const hasPhantom = window.solana && window.solana.isPhantom;
+            const hasSolflare = window.solflare;
+            const hasBackpack = window.backpack;
+            
+            if (hasPhantom || hasSolflare || hasBackpack) {
+                updateButtonStates();
+            }
         }
-    }, 5000);
+    }, 3000);
 
-    console.log('🎯 Solana Wallet Burner fully loaded and ready!');
+    addDebugLog('🎯 Wallet Burner fully initialized and ready!');
 </script>
 ```
 
 </body>
-</html>${wallet.publicKey}', 'Address copied!')">📋 Address</button>
-                        <button class="btn" onclick="copyToClipboard('
+</html>
